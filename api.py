@@ -17,6 +17,7 @@ def get_db():
         user=config.DB_USER,
         password=config.DB_PASS,
         database=config.DB_NAME,
+        port=int(os.environ.get("DB_PORT", 3306)),
         charset="utf8mb4",
         cursorclass=pymysql.cursors.DictCursor,
     )
@@ -226,4 +227,4 @@ def hisse_gecmis(ticker):
 
 
 if __name__ == "__main__":
-    app.run(port=5001, debug=False)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5001)), debug=False)
