@@ -1,18 +1,8 @@
 from __future__ import annotations
 
-import os
 import structlog
 
 logger = structlog.get_logger(__name__)
-
-_LABEL_MAP: dict[str, str] = {
-    "positive": "pozitif",
-    "LABEL_1": "pozitif",
-    "negative": "negatif",
-    "LABEL_0": "negatif",
-}
-
-_MAX_CHARS = 512
 
 POZITIF_KELIMELER = [
     "kar", "kâr", "artış", "yükseldi", "rekor", "büyüme",
@@ -25,15 +15,15 @@ NEGATIF_KELIMELER = [
     "soruşturma", "ceza", "iflas", "borç", "açık",
 ]
 
-def analyze_sentiment(text: str) -> str:
-    """Keyword tabanlı sentiment analizi (Railway modu)."""
+def analyze_sentiment(text: str) -> dict:
+    """Keyword tabanlı sentiment analizi. Dict döndürür."""
     if not text:
-        return "nötr"
+        return {"sentiment": "nötr", "skor": 0.0}
     text_lower = text.lower()
     pozitif = sum(1 for k in POZITIF_KELIMELER if k in text_lower)
     negatif = sum(1 for k in NEGATIF_KELIMELER if k in text_lower)
     if pozitif > negatif:
-        return "pozitif"
+        return {"sentiment": "pozitif", "skor": round(pozitif / (pozitif + negatif), 2)}
     elif negatif > pozitif:
-        return "negatif"
-    return "nötr"
+        return {"sentiment": "negatif", "skor": round(negatif / (pozitif + negatif), 2)}
+    return {"sentiment": "nötr", "skor": 0.5}
