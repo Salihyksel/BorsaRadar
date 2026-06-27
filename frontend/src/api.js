@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:5001/api'
+const API_BASE = 'https://borsaradar-production.up.railway.app/api'
 
 export const fetchKurlar = async () => {
   const res = await fetch(`${API_BASE}/kurlar`)
