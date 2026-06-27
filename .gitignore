@@ -1,0 +1,14 @@
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+node_modules/
+frontend/build/
+frontend/.env
+*.log
+.DS_Store
+*.sqlite
+venv/
+.venv/
+*.egg-info/

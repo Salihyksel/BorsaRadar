@@ -1,0 +1,15 @@
+flask
+flask-cors
+borsapy
+yfinance
+feedparser
+requests
+aiohttp
+APScheduler
+SQLAlchemy
+pymysql
+transformers
+torch
+python-dotenv
+structlog
+pykap
