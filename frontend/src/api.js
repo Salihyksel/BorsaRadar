@@ -1,24 +1,24 @@
 const API_BASE = 'https://borsaradar-production.up.railway.app/api'
 
-export const fetchKurlar = async () => {
-  const res = await fetch(`${API_BASE}/kurlar`)
-  return res.json()
+// Cache sistemi — 60 saniye TTL
+const cache = {}
+const CACHE_TTL = 60 * 1000
+
+async function fetchWithCache(key, url) {
+  const now = Date.now()
+  if (cache[key] && now - cache[key].ts < CACHE_TTL) {
+    return cache[key].data
+  }
+  const res = await fetch(url)
+  const data = await res.json()
+  cache[key] = { data, ts: now }
+  return data
 }
 
-export const fetchMadenler = async () => {
-  const res = await fetch(`${API_BASE}/madenler`)
-  return res.json()
-}
-
-export const fetchHisseler = async () => {
-  const res = await fetch(`${API_BASE}/hisseler`)
-  return res.json()
-}
-
-export const fetchHaberler = async () => {
-  const res = await fetch(`${API_BASE}/haberler`)
-  return res.json()
-}
+export const fetchKurlar = () => fetchWithCache('kurlar', `${API_BASE}/kurlar`)
+export const fetchMadenler = () => fetchWithCache('madenler', `${API_BASE}/madenler`)
+export const fetchHisseler = () => fetchWithCache('hisseler', `${API_BASE}/hisseler`)
+export const fetchHaberler = () => fetchWithCache('haberler', `${API_BASE}/haberler`)
 
 export function zamanFormatla(isoStr) {
   if (!isoStr) return '—'
