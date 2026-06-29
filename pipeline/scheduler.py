@@ -26,6 +26,7 @@ def _get_conn() -> pymysql.connections.Connection:
         user=config.DB_USER,
         password=config.DB_PASS,
         database=config.DB_NAME,
+        port=config.DB_PORT,
         charset="utf8mb4",
     )
 
@@ -96,10 +97,10 @@ def maden_job() -> None:
                 cursor.execute(
                     """
                     INSERT INTO maden_fiyatlari
-                        (maden_kodu, fiyat_usd, fiyat_try, guncelleme_zamani)
-                    VALUES (%s, %s, %s, NOW())
+                        (maden_kodu, fiyat_usd, fiyat_try, degisim_yuzde, guncelleme_zamani)
+                    VALUES (%s, %s, %s, %s, NOW())
                     """,
-                    (maden["maden_kodu"], maden["fiyat_usd"], maden["fiyat_try"]),
+                    (maden["maden_kodu"], maden["fiyat_usd"], maden["fiyat_try"], maden.get("degisim_yuzde", 0)),
                 )
             conn.commit()
             log.info("job.bitti", kaydedilen=len(madenler))
