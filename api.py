@@ -11,6 +11,41 @@ import config
 app = Flask(__name__)
 CORS(app)
 
+import json
+import time as _time
+import hashlib
+
+_CACHE_DIR = "/tmp/borsaradar_cache"
+os.makedirs(_CACHE_DIR, exist_ok=True)
+
+def _cache_path(key):
+    h = hashlib.md5(key.encode()).hexdigest()
+    return os.path.join(_CACHE_DIR, f"{h}.json")
+
+def cached(key, ttl_seconds, compute_fn):
+    path = _cache_path(key)
+    try:
+        if os.path.exists(path):
+            mtime = os.path.getmtime(path)
+            if _time.time() - mtime < ttl_seconds:
+                with open(path, "r") as f:
+                    return json.load(f)
+    except Exception:
+        pass
+
+    result = compute_fn()
+
+    try:
+        tmp_path = path + f".tmp{os.getpid()}"
+        with open(tmp_path, "w") as f:
+            json.dump(result, f)
+        os.replace(tmp_path, path)
+    except Exception:
+        pass
+
+    return result
+
+
 
 def get_db():
     return pymysql.connect(
@@ -54,7 +89,7 @@ def kurlar():
 
 @app.route("/api/madenler")
 def madenler():
-    try:
+    def _compute():
         conn = get_db()
         with conn:
             with conn.cursor() as cur:
@@ -78,14 +113,16 @@ def madenler():
                 "degisim_yuzde": float(row["degisim_yuzde"] or 0),
                 "guncelleme":    guncelleme.isoformat() if guncelleme else None,
             }
-        return jsonify(result)
+        return result
+    try:
+        return jsonify(cached("madenler", 30, _compute))
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
 @app.route("/api/hisseler")
 def hisseler():
-    try:
+    def _compute():
         conn = get_db()
         with conn:
             with conn.cursor() as cur:
@@ -111,14 +148,16 @@ def hisseler():
                 "hacim": row["hacim"],
                 "guncelleme": guncelleme.isoformat() if guncelleme else None,
             })
-        return jsonify(result)
+        return result
+    try:
+        return jsonify(cached("hisseler", 30, _compute))
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
 @app.route("/api/haberler")
 def haberler():
-    try:
+    def _compute():
         conn = get_db()
         with conn:
             with conn.cursor() as cur:
@@ -175,15 +214,19 @@ def haberler():
                 "gun_grubu": gun_grubu,
                 "varliklar": varliklar,
             })
-        return jsonify(result)
+        return result
+    try:
+        return jsonify(cached("haberler", 60, _compute))
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
 @app.route("/api/gecmis/<sembol>")
 def gecmis(sembol):
-    try:
-        from flask import request
+    from flask import request
+    period_key = request.args.get("period", "3A")
+
+    def _compute():
         MADEN_MAP = {
             "XAU": "GC=F",  "XAG": "SI=F",
             "XPT": "PL=F",  "XPD": "PA=F",
@@ -199,12 +242,11 @@ def gecmis(sembol):
             "1Y": ("1y", "1d"),
             "3Y": ("3y", "1wk"),
         }
-        period_key = request.args.get("period", "3A")
         period, interval = period_map.get(period_key, ("3mo", "1d"))
 
         hist = yf.Ticker(yf_sembol).history(period=period, interval=interval)
         if hist.empty:
-            return jsonify([])
+            return []
 
         result = []
         tarih_format = "%Y-%m-%d %H:%M" if interval in ("15m", "1h") else "%Y-%m-%d"
@@ -217,7 +259,11 @@ def gecmis(sembol):
                 "dusuk":   round(float(row["Low"]),   2),
                 "hacim":   int(row["Volume"]),
             })
-        return jsonify(result)
+        return result
+
+    try:
+        cache_key = f"gecmis:{sembol}:{period_key}"
+        return jsonify(cached(cache_key, 300, _compute))
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
