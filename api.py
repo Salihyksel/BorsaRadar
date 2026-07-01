@@ -24,36 +24,31 @@ def get_db():
     )
 
 
+_kur_cache = {"data": None, "ts": None}
+_KUR_CACHE_TTL = 60
+
 @app.route("/api/kurlar")
 def kurlar():
     try:
-        conn = get_db()
-        with conn:
-            with conn.cursor() as cur:
-                cur.execute("""
-                    SELECT kur_kodu, kur_deger, degisim_yuzde, guncelleme_zamani
-                    FROM kur_gecmisi
-                    WHERE kur_kodu IN ('USD', 'EUR')
-                    ORDER BY id DESC
-                    LIMIT 2
-                """)
-                rows = cur.fetchall()
-        result = {}
-        for row in rows:
-            kod = row["kur_kodu"]
-            result[kod] = {
-                "deger": float(row["kur_deger"]),
-                "degisim": float(row["degisim_yuzde"] or 0),
-                "guncelleme": row["guncelleme_zamani"].isoformat() if row["guncelleme_zamani"] else None
-            }
-        return jsonify({
-            "USD_TRY": result.get("USD", {}).get("deger", 0),
-            "EUR_TRY": result.get("EUR", {}).get("deger", 0),
-            "usd_degisim": result.get("USD", {}).get("degisim", 0),
-            "eur_degisim": result.get("EUR", {}).get("degisim", 0),
-            "guncelleme": datetime.now().isoformat(),
-        })
+        now = datetime.now()
+        if _kur_cache["data"] and _kur_cache["ts"] and (now - _kur_cache["ts"]).total_seconds() < _KUR_CACHE_TTL:
+            return jsonify(_kur_cache["data"])
+
+        from collectors.tcmb_collector import fetch_tcmb_data
+        k = fetch_tcmb_data()
+        result = {
+            "USD_TRY":     k["USD"],
+            "EUR_TRY":     k["EUR"],
+            "usd_degisim": k["USD_degisim"],
+            "eur_degisim": k["EUR_degisim"],
+            "guncelleme":  now.isoformat(),
+        }
+        _kur_cache["data"] = result
+        _kur_cache["ts"] = now
+        return jsonify(result)
     except Exception as e:
+        if _kur_cache["data"]:
+            return jsonify(_kur_cache["data"])
         return jsonify({"error": str(e)}), 500
 
 
