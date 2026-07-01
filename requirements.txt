@@ -9,3 +9,4 @@ SQLAlchemy
 pymysql
 python-dotenv
 structlog
+gunicorn
