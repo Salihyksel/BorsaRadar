@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect, useRef } from 'react'
 import { createChart, AreaSeries } from 'lightweight-charts'
 import Card from '../components/Card'
 import { T } from '../theme'
-import { fetchHisseler, fetchHaberler, zamanFormatla } from '../api'
+import { fetchHisseler, fetchHaberler, fetchGecmis, zamanFormatla } from '../api'
 
 const SEKTOR_MAP = {
   GARAN: 'Bankacılık', AKBNK: 'Bankacılık', ISCTR: 'Bankacılık',
@@ -73,30 +73,21 @@ const TIMEFRAMES = [
   { key: '3Y', label: '3Y', days: 1095 },
 ]
 
-function generateChartData(fiyat, degisim, days) {
-  const base = fiyat / (1 + degisim / 100)
-  const data = []
-  const now = new Date()
-  for (let i = days - 1; i >= 0; i--) {
-    const date = new Date(now)
-    date.setDate(date.getDate() - i)
-    if (date.getDay() === 0 || date.getDay() === 6) continue
-    const dateStr = date.toISOString().split('T')[0]
-    const noise = (Math.random() - 0.48) * 0.025
-    const trend = ((days - i) / days) * (degisim / 100)
-    const volatility = Math.sin(i * 0.3) * 0.015
-    const value = base * (1 + trend + noise + volatility)
-    data.push({ time: dateStr, value: parseFloat(value.toFixed(2)) })
-  }
-  return data
-}
-
 function StockChart({ hisse }) {
   const containerRef = useRef(null)
   const [timeframe, setTimeframe] = useState('3A')
+  const [gecmisVeri, setGecmisVeri] = useState([])
 
   useEffect(() => {
-    if (!containerRef.current) return
+    let iptal = false
+    fetchGecmis(hisse.ticker, timeframe).then(data => {
+      if (!iptal && Array.isArray(data)) setGecmisVeri(data)
+    })
+    return () => { iptal = true }
+  }, [hisse.ticker, timeframe])
+
+  useEffect(() => {
+    if (!containerRef.current || gecmisVeri.length === 0) return
 
     const chart = createChart(containerRef.current, {
       width: containerRef.current.clientWidth,
@@ -123,8 +114,11 @@ function StockChart({ hisse }) {
       lineWidth: 2,
     })
 
-    const days = TIMEFRAMES.find(t => t.key === timeframe).days
-    areaSeries.setData(generateChartData(hisse.fiyat, hisse.degisim, days))
+    const chartData = gecmisVeri.map(row => ({
+      time: row.tarih.includes(' ') ? row.tarih.split(' ')[0] : row.tarih,
+      value: row.kapanis,
+    }))
+    areaSeries.setData(chartData)
     chart.timeScale().fitContent()
 
     const handleResize = () => {
@@ -132,7 +126,7 @@ function StockChart({ hisse }) {
     }
     window.addEventListener('resize', handleResize)
     return () => { window.removeEventListener('resize', handleResize); chart.remove() }
-  }, [hisse.ticker, hisse.fiyat, hisse.degisim, timeframe])
+  }, [gecmisVeri])
 
   return (
     <>

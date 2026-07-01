@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { createChart, AreaSeries } from 'lightweight-charts'
 import Card from '../components/Card'
 import { T } from '../theme'
-import { fetchMadenler, fetchHaberler, zamanFormatla } from '../api'
+import { fetchMadenler, fetchHaberler, fetchGecmis, zamanFormatla } from '../api'
 
 const MADEN_BILGI = {
   XAU: { ad: 'Altın',    sembol: 'Au', renk: '#f59e0b' },
@@ -20,11 +20,20 @@ const TIMEFRAMES = [
   { key: '3Y', label: '3Y', days: 1095 },
 ]
 
-function MetalChart({ maden, days }) {
+function MetalChart({ maden, timeframe }) {
   const ref = useRef(null)
+  const [gecmisVeri, setGecmisVeri] = useState([])
 
   useEffect(() => {
-    if (!ref.current) return
+    let iptal = false
+    fetchGecmis(maden.kod, timeframe).then(data => {
+      if (!iptal && Array.isArray(data)) setGecmisVeri(data)
+    })
+    return () => { iptal = true }
+  }, [maden.kod, timeframe])
+
+  useEffect(() => {
+    if (!ref.current || gecmisVeri.length === 0) return
 
     const chart = createChart(ref.current, {
       width: ref.current.clientWidth,
@@ -46,19 +55,10 @@ function MetalChart({ maden, days }) {
       lineWidth: 2,
     })
 
-    const base = (maden.usd || 0) / (1 + maden.degisim / 100 || 1)
-    const data = []
-    const now = new Date()
-    for (let i = days - 1; i >= 0; i--) {
-      const d = new Date(now)
-      d.setDate(d.getDate() - i)
-      if (d.getDay() === 0 || d.getDay() === 6) continue
-      const dateStr = d.toISOString().split('T')[0]
-      const noise = (Math.random() - 0.48) * 0.02
-      const trend = ((days - i) / days) * (maden.degisim / 100)
-      const v = base * (1 + trend + noise + Math.sin(i * 0.2) * 0.012)
-      data.push({ time: dateStr, value: parseFloat(v.toFixed(2)) })
-    }
+    const data = gecmisVeri.map(row => ({
+      time: row.tarih.includes(' ') ? row.tarih.split(' ')[0] : row.tarih,
+      value: row.kapanis,
+    }))
 
     series.setData(data)
     chart.timeScale().fitContent()
@@ -68,7 +68,7 @@ function MetalChart({ maden, days }) {
     }
     window.addEventListener('resize', handleResize)
     return () => { window.removeEventListener('resize', handleResize); chart.remove() }
-  }, [maden.kod, maden.usd, maden.degisim, days])
+  }, [gecmisVeri])
 
   return <div ref={ref} style={{ width: '100%' }} />
 }
@@ -293,7 +293,7 @@ export default function Metals() {
                 </div>
               </div>
 
-              <MetalChart maden={seciliMaden} days={days} />
+              <MetalChart maden={seciliMaden} timeframe={timeframe} />
             </Card>
 
             {ilgiliHaberler.length > 0 && (

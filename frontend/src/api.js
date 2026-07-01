@@ -30,3 +30,8 @@ export function zamanFormatla(isoStr) {
   if (hours < 24) return `${hours}s önce`
   return `${Math.floor(hours / 24)}g önce`
 }
+
+export const fetchGecmis = async (sembol, period = '3A') => {
+  const res = await fetch(`${API_BASE}/gecmis/${sembol}?period=${period}`)
+  return res.json()
+}
