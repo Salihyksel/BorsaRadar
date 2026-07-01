@@ -199,7 +199,7 @@ export default function Metals() {
                   ${(m.usd || 0).toLocaleString('tr-TR')}
                 </p>
                 <p style={{ fontSize: '13px', color: T.textSecondary }}>
-                  ₺{(m.try_fiyat || 0).toLocaleString('tr-TR')} <span style={{ fontSize: '11px' }}>(troy ons)</span>
+                  ₺{((m.try_fiyat || 0) / 31.1035).toLocaleString('tr-TR', {maximumFractionDigits: 2})}/gr
                 </p>
               </Card>
             )
