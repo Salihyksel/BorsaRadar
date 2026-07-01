@@ -126,8 +126,8 @@ function StockChart({ hisse }) {
     }
     window.addEventListener('resize', handleResize)
     return () => { window.removeEventListener('resize', handleResize); chart.remove() }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gecmisVeri])
-
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>

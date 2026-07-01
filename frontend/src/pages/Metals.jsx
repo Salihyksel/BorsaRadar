@@ -68,6 +68,7 @@ function MetalChart({ maden, timeframe }) {
     }
     window.addEventListener('resize', handleResize)
     return () => { window.removeEventListener('resize', handleResize); chart.remove() }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gecmisVeri])
 
   return <div ref={ref} style={{ width: '100%' }} />
@@ -136,7 +137,6 @@ export default function Metals() {
     return () => clearInterval(interval)
   }, [])
 
-  const days = TIMEFRAMES.find(t => t.key === timeframe).days
 
   const ilgiliHaberler = seciliMaden
     ? haberler.filter(h =>
