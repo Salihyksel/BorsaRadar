@@ -196,10 +196,10 @@ export default function Metals() {
                   </span>
                 </div>
                 <p style={{ fontSize: '24px', fontWeight: 600, fontFamily: 'monospace', color: T.textPrimary, marginBottom: '2px' }}>
-                  ${(m.usd || 0).toLocaleString('tr-TR')}
+                  ₺{((m.try_fiyat || 0) / 31.1035).toLocaleString('tr-TR', {maximumFractionDigits: 2})}/gr
                 </p>
                 <p style={{ fontSize: '13px', color: T.textSecondary }}>
-                  ₺{((m.try_fiyat || 0) / 31.1035).toLocaleString('tr-TR', {maximumFractionDigits: 2})}/gr
+                  ${(m.usd || 0).toLocaleString('tr-TR')} <span style={{ fontSize: '11px' }}>(ons)</span>
                 </p>
               </Card>
             )
@@ -233,7 +233,7 @@ export default function Metals() {
                   </div>
                   <div style={{ textAlign: 'right' }}>
                     <p style={{ fontSize: '12px', fontFamily: 'monospace', color: T.textPrimary, margin: 0 }}>
-                      ${(m.usd || 0).toLocaleString('tr-TR')}
+                      ₺{((m.try_fiyat || 0) / 31.1035).toLocaleString('tr-TR', {maximumFractionDigits: 2})}
                     </p>
                     <span style={{
                       fontSize: '10px', fontWeight: 600,
@@ -262,7 +262,10 @@ export default function Metals() {
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <p style={{ fontSize: '26px', fontWeight: 600, fontFamily: 'monospace', color: T.textPrimary, margin: 0 }}>
-                    ${(seciliMaden.usd || 0).toLocaleString('tr-TR')}
+                    ₺{((seciliMaden.try_fiyat || 0) / 31.1035).toLocaleString('tr-TR', {maximumFractionDigits: 2})}/gr
+                  </p>
+                  <p style={{ fontSize: '13px', color: T.textSecondary, margin: '2px 0 0' }}>
+                    ${(seciliMaden.usd || 0).toLocaleString('tr-TR')} (ons)
                   </p>
                   <span style={{
                     fontSize: '13px',
