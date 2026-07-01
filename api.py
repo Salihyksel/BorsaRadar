@@ -183,6 +183,7 @@ def haberler():
 @app.route("/api/gecmis/<sembol>")
 def gecmis(sembol):
     try:
+        from flask import request
         MADEN_MAP = {
             "XAU": "GC=F",  "XAG": "SI=F",
             "XPT": "PL=F",  "XPD": "PA=F",
@@ -190,14 +191,26 @@ def gecmis(sembol):
         }
         yf_sembol = MADEN_MAP.get(sembol, f"{sembol}.IS")
 
-        hist = yf.Ticker(yf_sembol).history(period="1mo", interval="1d")
+        period_map = {
+            "1H": ("5d", "15m"),
+            "1A": ("1mo", "1d"),
+            "3A": ("3mo", "1d"),
+            "6A": ("6mo", "1d"),
+            "1Y": ("1y", "1d"),
+            "3Y": ("3y", "1wk"),
+        }
+        period_key = request.args.get("period", "3A")
+        period, interval = period_map.get(period_key, ("3mo", "1d"))
+
+        hist = yf.Ticker(yf_sembol).history(period=period, interval=interval)
         if hist.empty:
             return jsonify([])
 
         result = []
+        tarih_format = "%Y-%m-%d %H:%M" if interval in ("15m", "1h") else "%Y-%m-%d"
         for tarih, row in hist.iterrows():
             result.append({
-                "tarih":   tarih.strftime("%Y-%m-%d"),
+                "tarih":   tarih.strftime(tarih_format),
                 "kapanis": round(float(row["Close"]), 2),
                 "acilis":  round(float(row["Open"]),  2),
                 "yuksek":  round(float(row["High"]),  2),
