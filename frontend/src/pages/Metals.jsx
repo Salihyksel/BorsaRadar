@@ -56,7 +56,9 @@ function MetalChart({ maden, timeframe }) {
     })
 
     const data = gecmisVeri.map(row => ({
-      time: row.tarih.includes(' ') ? row.tarih.split(' ')[0] : row.tarih,
+      time: row.tarih.includes(' ')
+        ? Math.floor(new Date(row.tarih.replace(' ', 'T') + ':00').getTime() / 1000)
+        : row.tarih,
       value: row.kapanis,
     }))
 

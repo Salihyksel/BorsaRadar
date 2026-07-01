@@ -248,16 +248,24 @@ def gecmis(sembol):
         if hist.empty:
             return []
 
+        import math
         result = []
         tarih_format = "%Y-%m-%d %H:%M" if interval in ("15m", "1h") else "%Y-%m-%d"
         for tarih, row in hist.iterrows():
+            kapanis = row["Close"]
+            acilis = row["Open"]
+            yuksek = row["High"]
+            dusuk = row["Low"]
+            hacim = row["Volume"]
+            if any(v is None or (isinstance(v, float) and math.isnan(v)) for v in [kapanis, acilis, yuksek, dusuk]):
+                continue
             result.append({
                 "tarih":   tarih.strftime(tarih_format),
-                "kapanis": round(float(row["Close"]), 2),
-                "acilis":  round(float(row["Open"]),  2),
-                "yuksek":  round(float(row["High"]),  2),
-                "dusuk":   round(float(row["Low"]),   2),
-                "hacim":   int(row["Volume"]),
+                "kapanis": round(float(kapanis), 2),
+                "acilis":  round(float(acilis),  2),
+                "yuksek":  round(float(yuksek),  2),
+                "dusuk":   round(float(dusuk),   2),
+                "hacim":   int(hacim) if hacim is not None and not math.isnan(hacim) else 0,
             })
         return result
 
