@@ -26,8 +26,9 @@ function Navbar() {
     <nav style={{
       position: 'fixed', top: 0, left: 0, right: 0,
       height: '62px', zIndex: 100,
-      background: 'rgba(6,6,15,0.75)',
-      borderBottom: '1px solid rgba(255,255,255,0.07)',
+      background: 'linear-gradient(180deg, rgba(20,12,40,0.85), rgba(6,6,15,0.85))',
+      borderBottom: '1px solid rgba(124,58,237,0.18)',
+      boxShadow: '0 1px 20px rgba(124,58,237,0.08)',
       backdropFilter: 'blur(30px)',
       WebkitBackdropFilter: 'blur(30px)',
       display: 'flex', alignItems: 'center',
@@ -124,8 +125,9 @@ function MobileTabBar() {
     <nav className="mobile-bottom-tabbar" style={{
       position: 'fixed', bottom: 0, left: 0, right: 0,
       height: '64px', zIndex: 100,
-      background: 'rgba(6,6,15,0.92)',
-      borderTop: '1px solid rgba(255,255,255,0.08)',
+      background: 'linear-gradient(0deg, rgba(20,12,40,0.95), rgba(6,6,15,0.9))',
+      borderTop: '1px solid rgba(124,58,237,0.22)',
+      boxShadow: '0 -2px 24px rgba(124,58,237,0.1)',
       backdropFilter: 'blur(30px)',
       WebkitBackdropFilter: 'blur(30px)',
       alignItems: 'center',

@@ -144,10 +144,11 @@ export default function News() {
                     <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '10px' }}>
                       {(h.varliklar || []).map(v => (
                         <span key={v} style={{
-                          fontSize: '11px', padding: '2px 8px', borderRadius: '20px',
-                          background: T.accentBg, color: T.accent,
-                          border: `1px solid ${T.accentBorder}`
-                        }}>{v}</span>
+                          fontSize: '11px', fontWeight: 700, padding: '3px 10px', borderRadius: '20px',
+                          background: 'rgba(245,158,11,0.18)', color: '#fbbf24',
+                          border: '1px solid rgba(245,158,11,0.45)',
+                          letterSpacing: '0.02em',
+                        }}>{v.toUpperCase()}</span>
                       ))}
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>

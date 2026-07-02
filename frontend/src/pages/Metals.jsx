@@ -127,6 +127,7 @@ export default function Metals() {
           guncelleme: data.guncelleme,
         }))
         setMadenler(arr)
+        setSeciliMaden(prev => prev || arr.find(x => x.kod === 'XAU') || arr[0] || null)
         setHaberler(hab.map(n => ({ ...n, zaman: zamanFormatla(n.yayin_zamani) })))
       } catch (e) {
         console.error(e)
