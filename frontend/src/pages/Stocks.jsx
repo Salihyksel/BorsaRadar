@@ -255,7 +255,7 @@ export default function Stocks() {
             ))}
           </div>
 
-          <div style={{ maxHeight: 'calc(100vh - 300px)', overflowY: 'auto' }}>
+          <div className="stock-list-scroll" style={{ maxHeight: 'calc(100vh - 300px)', overflowY: 'auto' }}>
             {filtreliHisseler.map(h => {
               const isPos = h.degisim >= 0
               const isSelected = secili?.ticker === h.ticker

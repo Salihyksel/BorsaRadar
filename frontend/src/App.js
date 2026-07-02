@@ -134,14 +134,28 @@ function MobileTabBar() {
     }}>
       {navItems.map(item => (
         <NavLink key={item.to} to={item.to} style={({ isActive }) => ({
-          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
           textDecoration: 'none',
-          color: isActive ? '#c4b5fd' : 'rgba(255,255,255,0.45)',
+          color: isActive ? '#c4b5fd' : 'rgba(255,255,255,0.4)',
           flex: 1,
-          padding: '6px 0',
+          padding: '8px 0',
+          transition: 'color 0.2s ease',
         })}>
-          <span style={{ fontSize: '18px' }}>{item.emoji}</span>
-          <span style={{ fontSize: '10px', fontWeight: 500 }}>{item.label}</span>
+          {({ isActive }) => (
+            <>
+              <span style={{
+                fontSize: '17px',
+                width: '34px', height: '34px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                borderRadius: '12px',
+                background: isActive ? 'rgba(124,58,237,0.28)' : 'transparent',
+                boxShadow: isActive ? '0 0 14px rgba(124,58,237,0.35)' : 'none',
+                border: isActive ? '1px solid rgba(124,58,237,0.4)' : '1px solid transparent',
+                transition: 'all 0.2s ease',
+              }}>{item.emoji}</span>
+              <span style={{ fontSize: '10px', fontWeight: isActive ? 600 : 500 }}>{item.label}</span>
+            </>
+          )}
         </NavLink>
       ))}
     </nav>

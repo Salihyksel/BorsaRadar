@@ -120,7 +120,22 @@ export default function News() {
                       cursor: h.url ? 'pointer' : 'default',
                       transition: 'transform 0.15s ease',
                     }}>
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', marginBottom: '10px' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '10px' }}>
+                      {h.url && (
+                        <div style={{
+                          width: '28px', height: '28px', borderRadius: '7px', flexShrink: 0,
+                          background: 'linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.1))',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
+                          marginTop: '1px',
+                        }}>
+                          <img
+                            src={`https://www.google.com/s2/favicons?domain=${new URL(h.url).hostname}&sz=64`}
+                            alt=""
+                            style={{ width: '16px', height: '16px' }}
+                            onError={e => { e.target.style.display = 'none' }}
+                          />
+                        </div>
+                      )}
                       <p style={{ fontSize: '14px', fontWeight: 500, color: T.textPrimary, lineHeight: 1.5, margin: 0, flex: 1 }}>
                         {h.baslik}
                       </p>
