@@ -44,7 +44,7 @@ export default function News() {
     { key: 'tumu',    label: 'Tümü'    },
     { key: 'pozitif', label: 'Pozitif' },
     { key: 'negatif', label: 'Negatif' },
-    { key: 'notr',    label: 'Nötr'    },
+    { key: 'nötr',    label: 'Nötr'    },
   ]
 
   const filtreliHaberler = filtre === 'tumu'
@@ -105,8 +105,8 @@ export default function News() {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
               {grupHaberler.map((h, i) => {
-                const sentRenk = h.sentiment === 'pozitif' ? T.green : h.sentiment === 'negatif' ? T.red : 'rgba(255,255,255,0.08)'
-                const sentGolge = h.sentiment === 'pozitif' ? 'rgba(16,185,129,0.15)' : h.sentiment === 'negatif' ? 'rgba(244,63,94,0.15)' : 'transparent'
+                const sentRenk = h.sentiment === 'pozitif' ? 'rgba(16,185,129,0.9)' : h.sentiment === 'negatif' ? 'rgba(244,63,94,0.9)' : null
+                const sentGolge = h.sentiment === 'pozitif' ? 'rgba(16,185,129,0.25)' : h.sentiment === 'negatif' ? 'rgba(244,63,94,0.25)' : 'rgba(0,0,0,0)'
                 return (
                   <Card key={h.id} className={`s${(i % 6) + 1} card-enter`}
                     onClick={() => h.url && window.open(h.url, '_blank', 'noopener,noreferrer')}
@@ -114,8 +114,10 @@ export default function News() {
                     onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)' }}
                     style={{
                       padding: '16px',
-                      border: `1.5px solid ${sentRenk}`,
-                      boxShadow: sentGolge !== 'transparent' ? `0 0 12px ${sentGolge}` : 'none',
+                      border: 'none',
+                      boxShadow: sentRenk
+                        ? `0 0 0 1.5px ${sentRenk}, 0 0 16px ${sentGolge}`
+                        : '0 0 0 1px rgba(255,255,255,0.08)',
                       cursor: h.url ? 'pointer' : 'default',
                       transition: 'transform 0.15s ease',
                     }}>
