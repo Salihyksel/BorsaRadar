@@ -58,6 +58,7 @@ function Navbar() {
 
       {/* Tabs */}
       <div className="desktop-nav-tabs" style={{
+        display: 'flex',
         gap: '2px',
         background: 'rgba(255,255,255,0.04)',
         padding: '4px',
