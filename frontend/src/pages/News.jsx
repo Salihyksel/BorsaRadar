@@ -44,7 +44,6 @@ export default function News() {
     { key: 'tumu',    label: 'Tümü'    },
     { key: 'pozitif', label: 'Pozitif' },
     { key: 'negatif', label: 'Negatif' },
-    { key: 'nötr',    label: 'Nötr'    },
   ]
 
   const filtreliHaberler = filtre === 'tumu'

@@ -222,6 +222,43 @@ def tcmb_job() -> None:
         log.error("job.hata", hata=str(exc))
 
 
+def temizlik_job() -> None:
+    """30 gunden eski haberleri ve iliskili eslesmeleri siler.
+    Tablo buyuklugu sabit kalir, performans korunur."""
+    log = logger.bind(job="temizlik_job")
+    log.info("job.basladi")
+    try:
+        conn = _get_conn()
+        try:
+            cursor = conn.cursor()
+            cursor.execute("""
+                DELETE FROM haber_varlik_eslesme
+                WHERE haber_id IN (
+                    SELECT id FROM (
+                        SELECT id FROM haberler
+                        WHERE yayin_zamani < NOW() - INTERVAL 30 DAY
+                    ) AS eski_haberler
+                )
+            """)
+            silinen_eslesme = cursor.rowcount
+
+            cursor.execute("""
+                DELETE FROM haberler
+                WHERE yayin_zamani < NOW() - INTERVAL 30 DAY
+            """)
+            silinen_haber = cursor.rowcount
+
+            conn.commit()
+            log.info("job.bitti", silinen_haber=silinen_haber, silinen_eslesme=silinen_eslesme)
+        except Exception:
+            conn.rollback()
+            raise
+        finally:
+            conn.close()
+    except Exception as exc:
+        log.error("job.hata", hata=str(exc))
+
+
 # ── Scheduler kurulumu ─────────────────────────────────────────────────────────
 
 def main() -> None:
@@ -235,6 +272,11 @@ def main() -> None:
         hour=9, minute=5,
         day_of_week="mon-fri",
         id="tcmb_job",
+    )
+    scheduler.add_job(
+        temizlik_job, "cron",
+        hour=3, minute=0,
+        id="temizlik_job",
     )
 
     print("BorsaRadar Scheduler başladı")
