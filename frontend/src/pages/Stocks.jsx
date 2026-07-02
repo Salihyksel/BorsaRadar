@@ -215,7 +215,7 @@ export default function Stocks() {
   )
 
   return (
-    <div className="page-enter" style={{ padding: '28px 32px', maxWidth: '1400px', margin: '0 auto' }}>
+    <div className="page-enter page-container" style={{ padding: '28px 32px', maxWidth: '1400px', margin: '0 auto' }}>
       <div style={{ marginBottom: '20px' }}>
         <h1 style={{ fontSize: '20px', fontWeight: 500, color: T.textPrimary }}>Hisse Senetleri</h1>
         <p style={{ fontSize: '12px', color: T.textSecondary, marginTop: '2px' }}>
@@ -223,7 +223,7 @@ export default function Stocks() {
         </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '360px 1fr', gap: '16px', alignItems: 'start' }}>
+      <div className="stocks-layout-grid" style={{ display: 'grid', gridTemplateColumns: '360px 1fr', gap: '16px', alignItems: 'start' }}>
 
         <Card className="s1 card-enter" style={{ padding: '16px' }}>
           <div style={{ position: 'relative', marginBottom: '12px' }}>

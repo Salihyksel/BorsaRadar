@@ -263,7 +263,7 @@ export default function Dashboard() {
   const maxIndex    = Math.max(0, Math.floor(haberler.length / 3) - 1)
 
   return (
-    <div className="page-enter" style={{ padding: '28px 32px', maxWidth: '1400px', margin: '0 auto' }}>
+    <div className="page-enter page-container" style={{ padding: '28px 32px', maxWidth: '1400px', margin: '0 auto' }}>
 
       <div style={{ marginBottom: '24px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -286,7 +286,7 @@ export default function Dashboard() {
 
       <PiyasaGenislikBar hisseler={hisseler} />
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px', marginBottom: '20px' }}>
+      <div className="kpi-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px', marginBottom: '20px' }}>
         <KPIKart className="s1 card-enter" label="USD / TRY" deger={usd.toFixed(4)} degisim={usd_degisim} renkTop='rgba(99,102,241,0.6)' />
         <KPIKart className="s2 card-enter" label="EUR / TRY" deger={eur.toFixed(4)} degisim={eur_degisim} renkTop='rgba(99,102,241,0.6)' />
         <KPIKart className="s3 card-enter" label="Altın (gr)"
@@ -301,7 +301,7 @@ export default function Dashboard() {
           renkTop='rgba(148,163,184,0.6)' />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+      <div className="grid-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
 
         <Card className="s5 card-enter" style={{ padding: '20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>

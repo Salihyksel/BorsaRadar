@@ -160,7 +160,7 @@ export default function Metals() {
   )
 
   return (
-    <div className="page-enter" style={{ padding: '28px 32px', maxWidth: '1400px', margin: '0 auto' }}>
+    <div className="page-enter page-container" style={{ padding: '28px 32px', maxWidth: '1400px', margin: '0 auto' }}>
       <div style={{ marginBottom: '24px' }}>
         <h1 style={{ fontSize: '20px', fontWeight: 500, color: T.textPrimary }}>Değerli Madenler</h1>
         <p style={{ fontSize: '12px', color: T.textSecondary, marginTop: '2px' }}>
@@ -210,7 +210,7 @@ export default function Metals() {
       )}
 
       {seciliMaden && (
-        <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '20px', alignItems: 'start' }}>
+        <div className="metals-detail-grid" style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '20px', alignItems: 'start' }}>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {madenler.map((m, i) => {

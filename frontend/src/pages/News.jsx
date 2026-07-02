@@ -68,7 +68,7 @@ export default function News() {
   )
 
   return (
-    <div className="page-enter" style={{ padding: '28px 32px', maxWidth: '1200px', margin: '0 auto' }}>
+    <div className="page-enter page-container" style={{ padding: '28px 32px', maxWidth: '1200px', margin: '0 auto' }}>
       <div style={{ marginBottom: '24px' }}>
         <h1 style={{ fontSize: '20px', fontWeight: 500, color: T.textPrimary }}>Haberler</h1>
         <p style={{ fontSize: '12px', color: T.textSecondary, marginTop: '2px' }}>Finansal haberler ve piyasa etkileri</p>
@@ -102,7 +102,7 @@ export default function News() {
             }}>
               {grupAdi[grup]} • {grupHaberler.length} haber
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
+            <div className="grid-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
               {grupHaberler.map((h, i) => {
                 const sentRenk = h.sentiment === 'pozitif' ? 'rgba(16,185,129,0.9)' : h.sentiment === 'negatif' ? 'rgba(244,63,94,0.9)' : null
                 const sentGolge = h.sentiment === 'pozitif' ? 'rgba(16,185,129,0.25)' : h.sentiment === 'negatif' ? 'rgba(244,63,94,0.25)' : 'rgba(0,0,0,0)'

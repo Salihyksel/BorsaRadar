@@ -47,7 +47,7 @@ function Navbar() {
           fontSize: '14px',
           boxShadow: '0 0 20px rgba(124,58,237,0.4)',
         }}>◉</div>
-        <span style={{
+        <span className="top-navbar-logo-text" style={{
           fontSize: '15px', fontWeight: 600,
           background: 'linear-gradient(135deg, #c4b5fd, #818cf8)',
           WebkitBackgroundClip: 'text',
@@ -57,8 +57,8 @@ function Navbar() {
       </div>
 
       {/* Tabs */}
-      <div style={{
-        display: 'flex', gap: '2px',
+      <div className="desktop-nav-tabs" style={{
+        gap: '2px',
         background: 'rgba(255,255,255,0.04)',
         padding: '4px',
         borderRadius: '12px',
@@ -96,7 +96,7 @@ function Navbar() {
           animation: 'pulse 2s infinite',
           boxShadow: '0 0 8px #10b981',
         }}/>
-        <span style={{
+        <span className="top-navbar-clock-text" style={{
           fontSize: '12px',
           color: 'rgba(255,255,255,0.4)',
           fontVariantNumeric: 'tabular-nums',
@@ -107,6 +107,42 @@ function Navbar() {
           })}
         </span>
       </div>
+    </nav>
+  )
+}
+
+function MobileTabBar() {
+  const navItems = [
+    { to: '/dashboard', label: 'Ana Sayfa', emoji: '⌂' },
+    { to: '/stocks', label: 'Hisseler', emoji: '◈' },
+    { to: '/metals', label: 'Madenler', emoji: '◆' },
+    { to: '/news', label: 'Haberler', emoji: '◎' },
+  ]
+
+  return (
+    <nav className="mobile-bottom-tabbar" style={{
+      position: 'fixed', bottom: 0, left: 0, right: 0,
+      height: '64px', zIndex: 100,
+      background: 'rgba(6,6,15,0.92)',
+      borderTop: '1px solid rgba(255,255,255,0.08)',
+      backdropFilter: 'blur(30px)',
+      WebkitBackdropFilter: 'blur(30px)',
+      alignItems: 'center',
+      justifyContent: 'space-around',
+      paddingBottom: 'env(safe-area-inset-bottom)',
+    }}>
+      {navItems.map(item => (
+        <NavLink key={item.to} to={item.to} style={({ isActive }) => ({
+          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px',
+          textDecoration: 'none',
+          color: isActive ? '#c4b5fd' : 'rgba(255,255,255,0.45)',
+          flex: 1,
+          padding: '6px 0',
+        })}>
+          <span style={{ fontSize: '18px' }}>{item.emoji}</span>
+          <span style={{ fontSize: '10px', fontWeight: 500 }}>{item.label}</span>
+        </NavLink>
+      ))}
     </nav>
   )
 }
@@ -124,7 +160,7 @@ function App() {
       <StarfieldBackground />
 
       {/* Katman 3: UI */}
-      <div style={{ position: 'relative', zIndex: 2, paddingTop: '62px' }}>
+      <div className="app-content-wrapper" style={{ position: 'relative', zIndex: 2, paddingTop: '62px' }}>
         <Navbar />
         <Routes>
           <Route path="/" element={<Dashboard />} />
@@ -133,6 +169,7 @@ function App() {
           <Route path="/metals" element={<Metals />} />
           <Route path="/news" element={<News />} />
         </Routes>
+        <MobileTabBar />
       </div>
     </BrowserRouter>
   )

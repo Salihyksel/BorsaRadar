@@ -36,3 +36,44 @@
     transform: rotate(360deg);
   }
 }
+
+/* ── Mobil Responsive Kurallari ────────────────────────────────────── */
+
+.desktop-nav-tabs { display: flex; }
+.mobile-bottom-tabbar { display: none; }
+.top-navbar-clock { display: flex; }
+.top-navbar-logo-text { display: inline; }
+
+@media (max-width: 768px) {
+  .desktop-nav-tabs { display: none !important; }
+  .mobile-bottom-tabbar { display: flex !important; }
+  .top-navbar-clock-text { display: none !important; }
+  .app-content-wrapper { padding-bottom: 76px !important; }
+
+  .page-container {
+    padding: 16px !important;
+  }
+
+  .grid-2col {
+    grid-template-columns: 1fr !important;
+  }
+
+  .metals-detail-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .stocks-layout-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .top-navbar-logo-text { display: none !important; }
+}
+
+.kpi-grid { }
+@media (max-width: 768px) {
+  .kpi-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
