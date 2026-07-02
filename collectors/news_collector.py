@@ -18,9 +18,7 @@ _API_TIMEOUT = 10   # saniye
 
 _RSS_KAYNAKLAR: List[Dict] = [
     {"ad": "BloombergHT",      "url": "https://www.bloomberght.com/rss"},
-    {"ad": "Dunya Finans",     "url": "https://www.dunya.com/finans/rss",
-                                "fallback_url": "https://www.dunya.com/rss"},
-    {"ad": "BİST",             "url": "https://www.borsaistanbul.com/rss/news"},
+    {"ad": "Dunya Finans",     "url": "https://www.dunya.com/rss"},
     {"ad": "Hurriyet Ekonomi", "url": "https://www.hurriyet.com.tr/rss/ekonomi"},
     {"ad": "Sabah Ekonomi",    "url": "https://www.sabah.com.tr/rss/ekonomi.xml"},
     {"ad": "Yahoo Finance",    "url": "https://finance.yahoo.com/rss/topstories"},

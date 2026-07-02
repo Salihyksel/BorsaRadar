@@ -12,7 +12,7 @@ BIST_TICKERS: List[str] = [
     "PGSUS", "TCELL", "VESTL", "FROTO", "PETKM",
     "TAVHL", "TOASO", "ARCLK", "EKGYO", "SAHOL",
     "YKBNK", "HALKB", "VAKBN", "TTKOM", "TKFEN",
-    "LOGO",  "MGROS", "CCOLA", "AGHOL", "KOZAA",
+    "LOGO",  "MGROS", "CCOLA", "AGHOL", "ULKER",
 ]
 
 
