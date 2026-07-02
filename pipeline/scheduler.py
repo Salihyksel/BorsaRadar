@@ -14,7 +14,7 @@ from collectors.bist_collector import fetch_bist_data
 from collectors.metals_collector import fetch_metals_data
 from collectors.news_collector import fetch_news_data
 from collectors.tcmb_collector import fetch_tcmb_data
-from nlp.entity_matcher import match
+from nlp.entity_matcher import match, haberi_degerlendir
 from nlp.sentiment import analyze_sentiment
 
 logger = structlog.get_logger(__name__)
@@ -157,11 +157,18 @@ def haber_job() -> None:
         try:
             cursor = conn.cursor()
             kaydedilen = 0
+            atlanan_alakasiz = 0
             for haber in haberler:
                 try:
                     baslik = haber["baslik"]
+
+                    degerlendirme = haberi_degerlendir(baslik)
+                    if not degerlendirme["tut"]:
+                        atlanan_alakasiz += 1
+                        continue
+
                     nlp_sonuc = analyze_sentiment(baslik)
-                    varliklar = match(baslik)
+                    varliklar = degerlendirme["eslesme"]
 
                     cursor.execute(
                         """
@@ -194,7 +201,7 @@ def haber_job() -> None:
                     continue
 
             conn.commit()
-            log.info("job.bitti", cekilen=len(haberler), kaydedilen=kaydedilen)
+            log.info("job.bitti", cekilen=len(haberler), kaydedilen=kaydedilen, atlanan_alakasiz=atlanan_alakasiz)
         except Exception:
             conn.rollback()
             raise

@@ -2095,7 +2095,7 @@ _GENEL_BIST_LOWER = [k.lower() for k in _GENEL_BIST_KELIMELER]
 # ---------------------------------------------------------------------------
 
 def match(text: str) -> Dict:
-    lower = text.lower()
+    lower = text.lower().replace("-", " ")
     hisseler: Set[str] = set()
     madenler: Set[str] = set()
     dovizler: Set[str] = set()
@@ -2489,3 +2489,60 @@ def match(text: str) -> Dict:
         "bist_geneli": len(hisseler) == 0 and len(madenler) == 0,
         "etki_detaylari": etki_detaylari,
     }
+
+
+# ---------------------------------------------------------------------------
+# Alaka filtresi — sadece gercekten finansal etkisi olan haberleri tut
+# ---------------------------------------------------------------------------
+
+FINANSAL_BAGLAM_KELIMELERI = [
+    "hisse", "hisseleri", "hissesi", "borsa", "bist", "yüzde", "%",
+    "kâr", "kar açıkladı", "zarar", "yükseldi", "düştü", "geriledi",
+    "tl", "dolar", "euro", "kur", "yatırım", "yatırımcı",
+    "milyar", "milyon", "değer kaybetti", "değer kazandı",
+    "satış", "gelir", "bilanço", "temettü", "ihracat", "ithalat",
+    "rekor", "büyüme", "daralma", "endeks", "kapanış", "açılış",
+    "fiyat", "piyasa değeri", "sözleşme", "ihale", "ortaklık",
+]
+
+MAKRO_KELIMELER = [
+    "tcmb", "merkez bankası", "faiz kararı", "faiz oranı",
+    "enflasyon", "tüfe", "üfe", "fed", "federal reserve",
+    "cari açık", "işsizlik", "büyüme oranı", "gsyh", "gsmh",
+    "kredi notu", "moody's", "fitch", "s&p", "döviz kuru",
+    "hazine", "bütçe açığı", "dış ticaret", "ppk",
+]
+
+_FINANSAL_BAGLAM_LOWER = [k.lower() for k in FINANSAL_BAGLAM_KELIMELERI]
+_MAKRO_LOWER = [k.lower() for k in MAKRO_KELIMELER]
+
+
+def haberi_degerlendir(text: str) -> Dict[str, Any]:
+    """
+    Bir haberin sisteme kaydedilip kaydedilmeyecegine karar verir.
+
+    Donus:
+        {
+            "tut": bool,
+            "kategori": "hisse" | "genel" | "ret",
+            "eslesme": <match() ciktisi>,
+        }
+    """
+    lower = text.lower().replace("-", " ")
+    eslesme = match(text)
+
+    has_entity = bool(eslesme["hisseler"] or eslesme["madenler"] or eslesme["dovizler"])
+    has_finansal_baglam = any(k in lower for k in _FINANSAL_BAGLAM_LOWER)
+    has_makro = any(k in lower for k in _MAKRO_LOWER)
+
+    # Sirket/varlik eslesmesi VAR ve finansal baglam VAR -> tut (hisse kategorisi)
+    if has_entity and has_finansal_baglam:
+        return {"tut": True, "kategori": "hisse", "eslesme": eslesme}
+
+    # Makro/genel piyasa haberi -> tut (genel kategori)
+    if has_makro:
+        return {"tut": True, "kategori": "genel", "eslesme": eslesme}
+
+    # Sirket eslesmesi var ama finansal baglam yoksa (ör. sirket ismi gecen
+    # alakasiz bir haber) -> reddet
+    return {"tut": False, "kategori": "ret", "eslesme": eslesme}

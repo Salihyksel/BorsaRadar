@@ -7,7 +7,7 @@ from collectors.metals_collector import fetch_metals_data
 from collectors.bist_collector import fetch_bist_data
 from collectors.news_collector import fetch_news_data
 from nlp.sentiment import analyze_sentiment
-from nlp.entity_matcher import match
+from nlp.entity_matcher import match, haberi_degerlendir
 
 logger = structlog.get_logger(__name__)
 
@@ -139,11 +139,18 @@ def adim_haberler(conn: pymysql.connections.Connection) -> int:
 
         cursor = conn.cursor()
         kaydedilen = 0
+        atlanan_alakasiz = 0
         for i, haber in enumerate(haberler):
             try:
                 baslik = haber["baslik"]
+
+                degerlendirme = haberi_degerlendir(baslik)
+                if not degerlendirme["tut"]:
+                    atlanan_alakasiz += 1
+                    continue
+
                 nlp_sonuc = analyze_sentiment(baslik)
-                varliklar = match(baslik)
+                varliklar = degerlendirme["eslesme"]
 
                 cursor.execute(
                     """
@@ -182,7 +189,7 @@ def adim_haberler(conn: pymysql.connections.Connection) -> int:
                 continue
 
         conn.commit()
-        logger.info("adim.haberler.ok", cekilen=len(haberler), kaydedilen=kaydedilen)
+        logger.info("adim.haberler.ok", cekilen=len(haberler), kaydedilen=kaydedilen, atlanan_alakasiz=atlanan_alakasiz)
         return kaydedilen
 
     except Exception as exc:
