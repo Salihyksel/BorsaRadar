@@ -222,7 +222,7 @@ def main() -> None:
 
     scheduler.add_job(hisse_job, "interval", minutes=1, id="hisse_job")
     scheduler.add_job(maden_job, "interval", minutes=5, id="maden_job")
-    scheduler.add_job(haber_job, "interval", minutes=15, id="haber_job")
+    scheduler.add_job(haber_job, "interval", minutes=5, id="haber_job")
     scheduler.add_job(
         tcmb_job, "cron",
         hour=9, minute=5,
