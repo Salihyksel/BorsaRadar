@@ -1,4 +1,44 @@
 from typing import Any, Dict, List, Set
+import ahocorasick
+import structlog
+
+logger = structlog.get_logger(__name__)
+
+_AC_AUTOMATON = None
+
+def _get_automaton():
+    """DB'deki sirketler+aliaslar tablosundan Aho-Corasick otomatini kurar.
+    Basarisiz olursa None doner, cagiran taraf HISSE_MAP'e fallback yapar."""
+    global _AC_AUTOMATON
+    if _AC_AUTOMATON is not None:
+        return _AC_AUTOMATON
+    try:
+        import pymysql
+        import config
+        conn = pymysql.connect(
+            host=config.DB_HOST, user=config.DB_USER, password=config.DB_PASS,
+            database=config.DB_NAME, port=config.DB_PORT, charset="utf8mb4",
+        )
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT sa.alias, s.ticker FROM sirket_aliaslar sa
+            JOIN sirketler s ON sa.sirket_id = s.id
+            WHERE s.aktif = 1
+        """)
+        rows = cur.fetchall()
+        conn.close()
+
+        automaton = ahocorasick.Automaton()
+        for alias, ticker in rows:
+            automaton.add_word(alias.lower(), (alias.lower(), ticker))
+        automaton.make_automaton()
+        _AC_AUTOMATON = automaton
+        logger.info("entity_matcher.automaton.kuruldu", alias_sayisi=len(rows))
+        return _AC_AUTOMATON
+    except Exception as exc:
+        logger.warning("entity_matcher.automaton.hata", hata=str(exc))
+        return None
+
 
 # ---------------------------------------------------------------------------
 # Şirket adı → ticker eşlemesi (direkt isim geçişleri)
@@ -2395,10 +2435,15 @@ def match(text: str) -> Dict:
                 })
                 break
 
-    # 4. Şirket adı / ticker eşleşmesi
-    for keyword, ticker in HISSE_MAP.items():
-        if keyword in lower:
+    # 4. Şirket adı / ticker eşleşmesi (Aho-Corasick, DB tabanlı; basarisizsa HISSE_MAP fallback)
+    automaton = _get_automaton()
+    if automaton is not None:
+        for _, (alias, ticker) in automaton.iter(lower):
             hisseler.add(ticker)
+    else:
+        for keyword, ticker in HISSE_MAP.items():
+            if keyword in lower:
+                hisseler.add(ticker)
 
     # 5. Sektör keyword eşleşmesi
     for keyword, tickers in SEKTOR_MAP.items():

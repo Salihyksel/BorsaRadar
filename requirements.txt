@@ -10,3 +10,4 @@ pymysql
 python-dotenv
 structlog
 gunicorn
+pyahocorasick
