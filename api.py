@@ -210,7 +210,7 @@ def haberler():
                 "kaynak": row["kaynak"],
                 "sentiment": row["sentiment"],
                 "etki_skoru": row["etki_skoru"],
-                "yayin_zamani": yayin.isoformat() if yayin else None,
+                "yayin_zamani": (yayin.isoformat() + "Z") if yayin else None,
                 "gun_grubu": gun_grubu,
                 "varliklar": varliklar,
             })

@@ -161,8 +161,17 @@ function HaberKart({ haber }) {
         width: '48px', height: '48px', borderRadius: '8px', flexShrink: 0,
         background: 'linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.1))',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: '18px', color: T.accent
-      }}>◎</div>
+        fontSize: '18px', color: T.accent, overflow: 'hidden'
+      }}>
+        {haber.url ? (
+          <img
+            src={`https://www.google.com/s2/favicons?domain=${new URL(haber.url).hostname}&sz=64`}
+            alt=""
+            style={{ width: '24px', height: '24px' }}
+            onError={e => { e.target.style.display = 'none'; e.target.parentElement.textContent = '◎' }}
+          />
+        ) : '◎'}
+      </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', marginBottom: '4px' }}>
           <p style={{

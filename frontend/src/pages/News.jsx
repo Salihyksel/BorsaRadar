@@ -105,15 +105,17 @@ export default function News() {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
               {grupHaberler.map((h, i) => {
-                const sentRenk = h.sentiment === 'pozitif' ? T.green : h.sentiment === 'negatif' ? T.red : T.textSecondary
+                const sentRenk = h.sentiment === 'pozitif' ? T.green : h.sentiment === 'negatif' ? T.red : 'rgba(255,255,255,0.08)'
+                const sentGolge = h.sentiment === 'pozitif' ? 'rgba(16,185,129,0.15)' : h.sentiment === 'negatif' ? 'rgba(244,63,94,0.15)' : 'transparent'
                 return (
                   <Card key={h.id} className={`s${(i % 6) + 1} card-enter`}
-                    onClick={() => window.open(h.url, '_blank', 'noopener,noreferrer')}
+                    onClick={() => h.url && window.open(h.url, '_blank', 'noopener,noreferrer')}
                     onMouseEnter={e => { if (h.url) e.currentTarget.style.transform = 'translateY(-1px)' }}
                     onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)' }}
                     style={{
                       padding: '16px',
-                      borderLeft: `3px solid ${sentRenk}`,
+                      border: `1.5px solid ${sentRenk}`,
+                      boxShadow: sentGolge !== 'transparent' ? `0 0 12px ${sentGolge}` : 'none',
                       cursor: h.url ? 'pointer' : 'default',
                       transition: 'transform 0.15s ease',
                     }}>
